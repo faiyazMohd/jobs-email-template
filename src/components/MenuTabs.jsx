@@ -17,42 +17,85 @@ import {
 } from "@/components/components/ui/tabs";
 import toast, { Toaster } from "react-hot-toast";
 
-export default function MenuTabs({ templateWithValue }) {
+export default function MenuTabs({ templateWithValue, handleCopyClick }) {
   console.log({ templateWithValue });
-  const handleCopySubClick = async () => {
-    try {
-      await window.navigator.clipboard.writeText(
-        templateWithValue?.email?.subject
-      );
-      toast("Email Subject Copied to clipboard!", { icon: "✅" });
-    } catch (err) {
-      console.error("Unable to copy to clipboard.", err);
-      toast("Copy to clipboard failed.");
-    }
-  };
-  const handleCopyBodyClick = async () => {
-    try {
-      await window.navigator.clipboard.writeText(
-        templateWithValue?.email?.body
-      );
-      toast("Email Body Copied to clipboard!", { icon: "✅" });
-    } catch (err) {
-      console.error("Unable to copy to clipboard.", err);
-      toast("Copy to clipboard failed.");
-    }
-  };
+  const otherInfo = [
+    {
+      label: "Tell me about yourself",
+      body: templateWithValue?.other?.selfInfo,
+      copyBtnName: "Self Info",
+      copyFunction: () =>
+        handleCopyClick(templateWithValue?.other?.selfInfo, "Self Info"),
+    },
+    {
+      label: "Cold Referral",
+      body: templateWithValue?.other?.coldReferral,
+      copyBtnName: "Cold Referral",
+      copyFunction: () =>
+        handleCopyClick(
+          templateWithValue?.other?.coldReferral,
+          "Cold Referral"
+        ),
+    },
+    {
+      label: "Specific Referral",
+      body: templateWithValue?.other?.specificReferral,
+      copyBtnName: "Specific Referral",
+      copyFunction: () =>
+        handleCopyClick(
+          templateWithValue?.other?.specificReferral,
+          "Specific Referral"
+        ),
+    },
+    {
+      label: "Cold Referral To HR",
+      body: templateWithValue?.other?.coldReferralToHR,
+      copyBtnName: "Cold Referral To HR",
+      copyFunction: () =>
+        handleCopyClick(
+          templateWithValue?.other?.coldReferralToHR,
+          "Cold Referral To HR"
+        ),
+    },
+    {
+      label: "Specific Referral To HR",
+      body: templateWithValue?.other?.specificReferralToHR,
+      copyBtnName: "Specific Referral To HR",
+      copyFunction: () =>
+        handleCopyClick(
+          templateWithValue?.other?.specificReferralToHR,
+          "Specific Referral To HR"
+        ),
+    },
+  ];
   return (
     <div className="w-full flex justify-center mt-8">
-      <Tabs defaultValue="email" className="w-2/3">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs defaultValue="email" className="w-2/3" >
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="email">Email</TabsTrigger>
           <TabsTrigger value="coverLetter">Cover Letter</TabsTrigger>
+          <TabsTrigger value="other">Other</TabsTrigger>
         </TabsList>
         <TabsContent value="email">
           <Card className="w-full">
             <CardFooter className="flex gap-6 mt-5">
-              <Button onClick={handleCopySubClick}>Copy Subject</Button>
-              <Button onClick={handleCopyBodyClick}>Copy Body</Button>
+              <Button
+                onClick={() =>
+                  handleCopyClick(
+                    templateWithValue?.email?.subject,
+                    "Email Subject"
+                  )
+                }
+              >
+                Copy Subject
+              </Button>
+              <Button
+                onClick={() =>
+                  handleCopyClick(templateWithValue?.email?.body, "Email Body")
+                }
+              >
+                Copy Body
+              </Button>
             </CardFooter>
             <CardHeader>
               {/* <CardTitle>Email</CardTitle> */}
@@ -70,18 +113,50 @@ export default function MenuTabs({ templateWithValue }) {
           </Card>
         </TabsContent>
         <TabsContent value="coverLetter">
-          <Card>
+          <Card className="w-full">
+            <CardFooter className="flex gap-6 mt-5">
+              {/* <Button onClick={handleCopySubClick}>Copy Subject</Button>
+              <Button onClick={handleCopyBodyClick}>Copy Body</Button> */}
+            </CardFooter>
             <CardHeader>
-              <CardTitle>Cover letter</CardTitle>
-              <CardTitle>Cover letter</CardTitle>
-              <CardDescription>
-                Email Template for applying jobs{" "}
+              {/* <CardTitle>Email</CardTitle> */}
+              <CardTitle>Subject</CardTitle>
+              <CardDescription className="font-medium text-black text-base">
+                {templateWithValue?.coverLetter?.subject}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2"></CardContent>
-            <CardFooter>
-              <Button>Copy</Button>
-            </CardFooter>
+            <CardHeader>
+              <CardTitle>Body</CardTitle>
+              <CardDescription className="font-medium text-black text-base whitespace-pre-wrap">
+                {templateWithValue?.coverLetter?.body}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </TabsContent>
+        <TabsContent value="other">
+          <Card className="w-full">
+          {otherInfo?.map((item, index) => {
+            return (
+              <>
+                <CardHeader>
+                  <CardTitle className="font-semibold text-black text-lg">
+                    {item?.label}
+                  </CardTitle>
+                  <CardDescription className="font-medium text-black text-base whitespace-pre-wrap">
+                    {item?.body}
+                  </CardDescription>
+                </CardHeader>
+                <CardFooter className="flex gap-6 mt-1">
+                  <Button onClick={item?.copyFunction}>
+                    Copy {item?.copyBtnName}
+                  </Button>
+                </CardFooter>
+                <CardFooter className="flex gap-6 ">
+                  <hr className="border bg-black w-full" />
+                </CardFooter>
+              </>
+            );
+          })}
           </Card>
         </TabsContent>
       </Tabs>
