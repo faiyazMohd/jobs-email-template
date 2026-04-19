@@ -4,44 +4,36 @@ import MenuTabs from "./MenuTabs";
 import toast from "react-hot-toast";
 
 const MainBody = () => {
-  const [userTemplateInfo, setUserTemplateInfo] = useState({
-    firstName: "Faiyaz",
-    lastName: "Mohamed",
-    experience: 1.1,
-    positionName: "",
-    companyName: "",
-    portfolioUrl: "faiyazmohamed.netlify.app",
-    HrName: "Hiring Manager",
-    teamManaged: 5,
-    email: "faiyaz.b.mohd@gmail.com",
-    phoneNumber: 7977017820,
-    advertisedAt: "careers",
-  });
+ const [userTemplateInfo, setUserTemplateInfo] = useState({
+  firstName: "Faiyaz",
+  lastName: "Mohamed",
+  experience: 2.4,
+  positionName: "",
+  companyName: "",
+  portfolioUrl: "faiyazmohamed.netlify.app",
+  HrName: "Hiring Manager",
+  teamManaged: 5,
+  email: "faiyaz.b.mohd@gmail.com",
+  phoneNumber: 7977017820,
+  advertisedAt: "careers",
+  roleType: "frontend",
+});
 
   const [userInfoErrors, setUserInfoErrors] = useState({});
-
   const [templateWithValue, setTemplateWithValue] = useState({});
-
-  console.log({ userTemplateInfo });
-  console.log({ userInfoErrors });
 
   const handleOnChange = (e) => {
     delete userInfoErrors[e.target.name];
     const name = e.target.name;
     const value = e.target.value;
-    setUserTemplateInfo((prev) => {
-      return { ...prev, [name]: value };
-    });
+    setUserTemplateInfo((prev) => ({ ...prev, [name]: value }));
   };
 
   const checkForErrors = () => {
-    // Object.keys(userTemplateInfo).map((key) => {
-    //   userTemplateInfo[key] === "" || userTemplateInfo[key] === 0;
-
-    // });
     const errorObj = { ...userInfoErrors };
     let isError = false;
-    userTemplateInputs?.map((item, index) => {
+
+    userTemplateInputs?.forEach((item) => {
       if (
         userTemplateInfo[item?.name] === "" ||
         userTemplateInfo[item?.name] === 0
@@ -49,7 +41,6 @@ const MainBody = () => {
         errorObj[item?.name] = item?.name + " is required";
         isError = true;
       }
-      return item;
     });
 
     setUserInfoErrors(errorObj);
@@ -60,418 +51,279 @@ const MainBody = () => {
     try {
       const isError = checkForErrors();
       if (isError) {
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
         toast("Fill all the fields to copy.", { icon: "❌" });
         return;
       }
       await window.navigator.clipboard.writeText(copyText);
       toast(`${whatCopied} Copied to clipboard!`, { icon: "✅" });
     } catch (err) {
-      console.error("Unable to copy to clipboard.", err);
       toast("Copy to clipboard failed.");
     }
   };
 
   useEffect(() => {
     setTemplateWithValue((prev) => {
+      const isFullStack = userTemplateInfo?.roleType === "fullstack";
+
+      // ✅ FIXED INTRO (backend only for fullstack)
+      const introText = isFullStack
+        ? `With ${userTemplateInfo?.experience || "[_experience_]"} year${
+            userTemplateInfo?.experience <= 1 ? "" : "s"
+          } of experience as a Full Stack Developer, I specialize in React.js, Next.js, and React Native, along with backend experience in Node.js and MongoDB.`
+        : `With ${userTemplateInfo?.experience || "[_experience_]"} year${
+            userTemplateInfo?.experience <= 1 ? "" : "s"
+          } of experience in Frontend development, I specialize in React.js, Next.js, and React Native.`;
+
+      // ✅ ALWAYS FRONTEND (NO BACKEND CLAIM)
+      const gbimText = `Currently at GBIM Technologies Pvt. Ltd., I work on DMCockpit, a scalable digital marketing platform with real-time dashboards and optimized frontend architecture.`;
+
+      // ✅ BACKEND ONLY HERE
+      const boppoText = isFullStack
+        ? `Previously at Boppo Technologies, I worked on Keydemand, where I led frontend development within a team of ${
+            userTemplateInfo?.teamManaged || "[_team_size_]"
+          } members and also contributed to backend development using Node.js and MongoDB.`
+        : `Previously at Boppo Technologies, I worked on Keydemand, where I led frontend development within a team of ${
+            userTemplateInfo?.teamManaged || "[_team_size_]"
+          } members.`;
+
       return {
         ...prev,
+
         email: {
           subject: `Application for ${
-            userTemplateInfo?.positionName
-              ? userTemplateInfo?.positionName
-              : "[_position_name_]"
+            userTemplateInfo?.positionName || "[_position_name_]"
           } Role`,
           body: `
-Dear ${
-            userTemplateInfo?.HrName
-              ? userTemplateInfo?.HrName
-              : "[_position_name_]"
-          },
+Dear ${userTemplateInfo?.HrName || "[_HR_name_]"},
 
 I trust this message finds you well. I am excited to apply for the ${
-            userTemplateInfo?.positionName
-              ? userTemplateInfo?.positionName
-              : "[_position_name_]"
+            userTemplateInfo?.positionName || "[_position_name_]"
           } role at ${
-            userTemplateInfo?.companyName
-              ? userTemplateInfo?.companyName
-              : "[_company_name_]"
-          }, as advertised on your ${
-            userTemplateInfo?.advertisedAt
-              ? userTemplateInfo?.advertisedAt
-              : "[_advertised_at_]"
-          } page.
-
-With ${
-            userTemplateInfo?.experience
-              ? userTemplateInfo?.experience
-              : "[_experience_]"
-          } year${
-            userTemplateInfo?.experience <= 1 ? "" : "s"
-          } of experience in frontend development, I have gained extensive expertise in React JS, React Native, and Next.js. At Boppo Technologies Pvt. Ltd., I contributed to scalable, efficient projects and managed the frontend of a team-driven project with ${
-            userTemplateInfo?.teamManaged
-              ? userTemplateInfo?.teamManaged
-              : "[_no_of_team_members_]"
-          } members, delivering user-focused solutions.
-
-I am passionate about crafting clean, scalable code and exploring new technologies to drive innovation. Joining ${
-            userTemplateInfo?.companyName
-              ? userTemplateInfo?.companyName
-              : "[_company_name_]"
-          } would be an excellent opportunity to contribute my skills to your forward-thinking team.
-
-I have attached my resume for your review and would be delighted to discuss my skills further. Please feel free to reach out at +91 ${
-            userTemplateInfo?.phoneNumber
-              ? userTemplateInfo?.phoneNumber
-              : "[_phone_number_]"
-          } or ${
-            userTemplateInfo?.email ? userTemplateInfo?.email : "[_email_]"
-          }. Additionally, you can view my portfolio at ${
-            userTemplateInfo?.portfolioUrl
-              ? userTemplateInfo?.portfolioUrl
-              : "[_portfolioUrl_]"
-          } for examples of my work.
-
-Thank you for considering my application. I look forward to the possibility of contributing to your team's success.
-
-Best regards,
-${
-  userTemplateInfo?.firstName ? userTemplateInfo?.firstName : "[_first_name_]"
-} ${userTemplateInfo?.lastName ? userTemplateInfo?.lastName : "[_last_name_]"}
-
-            `,
-        },
-        coverLetter: {
-          subject: `Cover Letter for ${
-            userTemplateInfo?.positionName
-              ? userTemplateInfo?.positionName
-              : "[_position_name_]"
-          } Role`,
-          body: `
-Dear ${userTemplateInfo?.HrName ? userTemplateInfo?.HrName : "[_HR_name_]"},
-      
-I trust this message finds you well. I am writing to express my keen interest in the ${
-            userTemplateInfo?.positionName
-              ? userTemplateInfo?.positionName
-              : "[_position_name_]"
-          } role at ${
-            userTemplateInfo?.companyName
-              ? userTemplateInfo?.companyName
-              : "[_company_name_]"
-          }, as advertised on ${
-            userTemplateInfo?.advertisedAt
-              ? userTemplateInfo?.advertisedAt
-              : "[_advertised_at_]"
+            userTemplateInfo?.companyName || "[_company_name_]"
           }.
 
-With ${
-            userTemplateInfo?.experience
-              ? userTemplateInfo?.experience
-              : "[_experience_]"
-          } year${
-            userTemplateInfo?.experience > 1 ? "s" : ""
-          } of experience in frontend development, I have gained extensive expertise in React JS, React Native, and Next.js. During my tenure at Boppo Technologies Pvt. Ltd., I contributed to scalable, efficient projects and successfully managed the frontend development of a team-driven project with ${
-            userTemplateInfo?.teamManaged
-              ? userTemplateInfo?.teamManaged
-              : "[_no_of_team_members_]"
-          } members, delivering user-focused solutions.
+${introText}
 
-I am passionate about solving complex challenges through clean, maintainable code and leveraging new technologies to drive innovation. Joining ${
-            userTemplateInfo?.companyName
-              ? userTemplateInfo?.companyName
-              : "[_company_name_]"
-          } would allow me to contribute my skills while continuing to grow as a developer.
+${gbimText}
 
-I have attached my resume for your review and would be delighted to discuss how my skills and experience align with the requirements of the role. Please feel free to contact me at +91 ${
-            userTemplateInfo?.phoneNumber
-              ? userTemplateInfo?.phoneNumber
-              : "[_phone_number_]"
-          } or ${
-            userTemplateInfo?.email ? userTemplateInfo?.email : "[_email_]"
-          } to arrange a discussion.
+${boppoText}
 
-Thank you for considering my application. I look forward to the opportunity to contribute to your team's success.
+I am passionate about building clean, scalable applications and continuously exploring new technologies. Joining ${
+  userTemplateInfo?.companyName || "[_company_name_]"
+} would be a great opportunity to contribute to your team.
 
-Best regards,
-${
-  userTemplateInfo?.firstName ? userTemplateInfo?.firstName : "[_first_name_]"
-} ${userTemplateInfo?.lastName ? userTemplateInfo?.lastName : "[_last_name_]"}
-${
-  userTemplateInfo?.portfolioUrl
-    ? userTemplateInfo?.portfolioUrl
-    : "[_portfolio_url_]"
+I’ve attached my resume for your review. You can reach me at +91 ${
+  userTemplateInfo?.phoneNumber || "[_phone_number_]"
+} or ${
+  userTemplateInfo?.email || "[_email_]"
+}. You can also view my portfolio at ${
+  userTemplateInfo?.portfolioUrl || "[_portfolioUrl_]"
+}.
+
+Thank you for your time and consideration.
+
+Best regards,  
+${userTemplateInfo?.firstName || "[_first_name_]"} ${
+            userTemplateInfo?.lastName || "[_last_name_]"
+          }
++91 ${
+  userTemplateInfo?.phoneNumber || "[_phone_number_]"
 }
-    `,
+${
+  userTemplateInfo?.email || "[_email_]"
+}
+          `,
         },
+
+        coverLetter: {
+          subject: `Cover Letter for ${
+            userTemplateInfo?.positionName || "[_position_name_]"
+          } Role`,
+          body: `
+Dear ${userTemplateInfo?.HrName || "[_HR_name_]"},
+
+I am writing to express my interest in the ${
+            userTemplateInfo?.positionName || "[_position_name_]"
+          } role.
+
+${introText}
+
+${gbimText}
+
+${boppoText}
+
+I enjoy solving complex problems and building efficient systems and continuously exploring new technologies. Joining ${
+  userTemplateInfo?.companyName || "[_company_name_]"
+} would be a great opportunity to contribute to your team.
+
+I’ve attached my resume for your review. You can reach me at +91 ${
+  userTemplateInfo?.phoneNumber || "[_phone_number_]"
+} or ${
+  userTemplateInfo?.email || "[_email_]"
+}. You can also view my portfolio at ${
+  userTemplateInfo?.portfolioUrl || "[_portfolioUrl_]"
+}.
+
+Thank you for your time and consideration.
+
+Best regards,  
+${userTemplateInfo?.firstName || "[_first_name_]"} ${
+            userTemplateInfo?.lastName || "[_last_name_]"
+          }
++91 ${
+  userTemplateInfo?.phoneNumber || "[_phone_number_]"
+}
+${
+  userTemplateInfo?.email || "[_email_]"
+}
+          `,
+        },
+
+        
+
         other: {
-          selfInfo: `I am a Frontend Developer with ${
-            userTemplateInfo?.experience
-              ? userTemplateInfo?.experience
-              : "[_experience_]"
-          } year${
-            userTemplateInfo?.experience <= 1 ? "" : "s"
-          } of experience specializing in React.js, React Native, and Next.js. At Boppo Technologies, I contributed to scalable web and mobile applications and even managed the frontend for a project with a team of ${
-            userTemplateInfo?.teamManaged
-              ? userTemplateInfo?.teamManaged
-              : "[_no_of_team_members_]"
-          }. I’m passionate about learning new technologies, solving challenging problems, and delivering seamless user experiences. I’m particularly excited about opportunities where I can grow further as a developer while contributing to impactful projects.`,
+          selfInfo: isFullStack
+            ? `I am a Full Stack Developer with ${
+                userTemplateInfo?.experience || "[_experience_]"
+              } year${
+                userTemplateInfo?.experience <= 1 ? "" : "s"
+              } of experience in React.js, Next.js, React Native, Node.js, and MongoDB. Currently at GBIM Technologies, I work on DMCockpit focusing on frontend development. Previously, I worked on Keydemand at Boppo Technologies where I contributed to backend systems along with leading frontend development within a team of ${
+                userTemplateInfo?.teamManaged || "[_team_size_]"
+              } members.`
+            : `I am a Frontend Developer with ${
+                userTemplateInfo?.experience || "[_experience_]"
+              } year${
+                userTemplateInfo?.experience <= 1 ? "" : "s"
+              } of experience in React.js, Next.js, and React Native. Currently at GBIM Technologies, I work on DMCockpit. Previously, I led frontend development at Boppo Technologies within a team of ${
+                userTemplateInfo?.teamManaged || "[_team_size_]"
+              } members.`,
+
           coldReferral: `Hi ${
-            userTemplateInfo?.HrName
-              ? userTemplateInfo?.HrName
-              : "[_position_name_]"
+            userTemplateInfo?.HrName || "[_name_]"
           },
 
-I hope you’re doing well. I noticed that you’re working at ${
-            userTemplateInfo?.companyName
-              ? userTemplateInfo?.companyName
-              : "[_company_name_]"
-          } as a ${
-            userTemplateInfo?.positionName
-              ? userTemplateInfo?.positionName
-              : "[_position_name_]"
-          }, and I’m truly inspired by the work your company is involved in.
+I’m exploring ${
+            isFullStack ? "Full Stack Developer" : "Frontend Developer"
+          } opportunities.
 
-I’m currently exploring opportunities for a Frontend developer Role and was wondering if you could kindly refer me for any suitable openings at your company. I have ${
-            userTemplateInfo?.experience
-              ? userTemplateInfo?.experience
-              : "[_experience_]"
+I have ${
+            userTemplateInfo?.experience || "[_experience_]"
           } year${
             userTemplateInfo?.experience <= 1 ? "" : "s"
-          } of experience working with React, React Native, and Next.js.
+          } of experience in React, Next.js${
+            isFullStack ? ", Node.js and MongoDB (previous role)" : ""
+          }.
 
-You can also visit my portfolio at ${
-            userTemplateInfo?.portfolioUrl
-              ? userTemplateInfo?.portfolioUrl?.startsWith("https://")
-                ? userTemplateInfo?.portfolioUrl
-                : "https://" + userTemplateInfo?.portfolioUrl
-              : "[_portfolioUrl_]"
-          } to check out some of the projects I’ve worked on.
+Currently at GBIM (DMCockpit), previously led frontend at Boppo within a team of ${
+            userTemplateInfo?.teamManaged || "[_team_size_]"
+          } members.
 
-Let me know if you’d like me to share my resume or any other details. I’d really appreciate your support.
+Portfolio: ${
+            userTemplateInfo?.portfolioUrl || "[_portfolioUrl_]"
+          }
 
-Thank you so much!`,
+Thanks!`,
+
           coldReferralToHR: `Hi ${
-            userTemplateInfo?.HrName
-              ? userTemplateInfo?.HrName
-              : "[_position_name_]"
+            userTemplateInfo?.HrName || "[_name_]"
           },
 
 I hope you're doing well. I came across ${
-            userTemplateInfo?.companyName
-              ? userTemplateInfo?.companyName
-              : "[_company_name_]"
-          } and was really impressed with the work your team is doing.
-
-I’m currently looking for opportunities for a Frontend developer Role at your company, and I wanted to ask if there are any suitable openings available.  I have ${
-            userTemplateInfo?.experience
-              ? userTemplateInfo?.experience
-              : "[_experience_]"
-          } year${
-            userTemplateInfo?.experience <= 1 ? "" : "s"
-          } of experience working with React, React Native, and Next.js.
-
-You can also visit my portfolio at ${
-            userTemplateInfo?.portfolioUrl
-              ? userTemplateInfo?.portfolioUrl?.startsWith("https://")
-                ? userTemplateInfo?.portfolioUrl
-                : "https://" + userTemplateInfo?.portfolioUrl
-              : "[_portfolioUrl_]"
-          } to check out some of the projects I’ve worked on.
-
-Let me know if you’d like me to share my resume or any other details. I’d really appreciate your support.
-
-Thank you so much!`,
-          specificReferral: `Hi ${
-            userTemplateInfo?.HrName
-              ? userTemplateInfo?.HrName
-              : "[_position_name_]"
-          },
-
-I hope you’re doing well. I noticed that you’re working at ${
-            userTemplateInfo?.companyName
-              ? userTemplateInfo?.companyName
-              : "[_company_name_]"
-          } as a [_position_working_as_], and I saw that there’s an opening for the ${
-            userTemplateInfo?.positionName
-              ? userTemplateInfo?.positionName
-              : "[_position_name_]"
-          } position.
-
-I’m currently exploring opportunities for a Frontend developer Role and was wondering if you could kindly refer me for this role. I have ${
-            userTemplateInfo?.experience
-              ? userTemplateInfo?.experience
-              : "[_experience_]"
-          } year${
-            userTemplateInfo?.experience <= 1 ? "" : "s"
-          } of experience working with React, React Native, and Next.js and believe I’d be a great fit for the team.
-
-Feel free to check out my portfolio at ${
-            userTemplateInfo?.portfolioUrl
-              ? userTemplateInfo?.portfolioUrl?.startsWith("https://")
-                ? userTemplateInfo?.portfolioUrl
-                : "https://" + userTemplateInfo?.portfolioUrl
-              : "[_portfolioUrl_]"
-          } to get an overview of the projects I’ve worked on.
-
-Let me know if you’d like me to share my resume or any other details. I’d really appreciate your support.
-
-Thank you so much for your time!`,
-          specificReferralToHR: `Hi ${
-            userTemplateInfo?.HrName
-              ? userTemplateInfo?.HrName
-              : "[_position_name_]"
-          },
-
-I hope you're doing well. I noticed that there’s an opening for the ${
-  userTemplateInfo?.positionName
-    ? userTemplateInfo?.positionName
-    : "[_position_name_]"
-} position at ${
-  userTemplateInfo?.companyName
-    ? userTemplateInfo?.companyName
-    : "[_company_name_]"
-}, and I wanted to reach out to express my interest.
+            userTemplateInfo?.companyName || "[_company_name_]"
+          } and wanted to explore opportunities for a ${
+            isFullStack ? "Full Stack Developer" : "Frontend Developer"
+          } role.
 
 I have ${
-  userTemplateInfo?.experience
-    ? userTemplateInfo?.experience
-    : "[_experience_]"
-} year${
-  userTemplateInfo?.experience <= 1 ? "" : "s"
-} of experience with React, React Native, Next.js and believe I would be a great fit for the role. I’d be grateful if you could consider my profile for this position.
+            userTemplateInfo?.experience || "[_experience_]"
+          } year${
+            userTemplateInfo?.experience <= 1 ? "" : "s"
+          } of experience in React, Next.js${
+            isFullStack ? ", Node.js and MongoDB (previous role)" : ""
+          }.
 
-Feel free to check out my portfolio at ${
-            userTemplateInfo?.portfolioUrl
-              ? userTemplateInfo?.portfolioUrl?.startsWith("https://")
-                ? userTemplateInfo?.portfolioUrl
-                : "https://" + userTemplateInfo?.portfolioUrl
-              : "[_portfolioUrl_]"
-          } to get an overview of the projects I’ve worked on.
+Currently at GBIM Technologies, I work on DMCockpit. Previously at Boppo Technologies.
 
-Please let me know if you need any additional information or my resume. Thank you so much for your time and support!
+Portfolio: ${
+            userTemplateInfo?.portfolioUrl || "[_portfolioUrl_]"
+          }
 
-Best regards,
-${
-  userTemplateInfo?.firstName ? userTemplateInfo?.firstName : "[_first_name_]"
-} ${userTemplateInfo?.lastName ? userTemplateInfo?.lastName : "[_last_name_]"}`,
+Thank you!`,
+
+          specificReferral: `Hi ${
+            userTemplateInfo?.HrName || "[_name_]"
+          },
+
+I noticed an opening for ${
+            userTemplateInfo?.positionName || "[_position_name_]"
+          }.
+
+I have ${
+            userTemplateInfo?.experience || "[_experience_]"
+          } year${
+            userTemplateInfo?.experience <= 1 ? "" : "s"
+          } of experience in React, Next.js${
+            isFullStack ? ", Node.js and MongoDB (previous role)" : ""
+          }.
+
+Currently at GBIM, previously at Boppo.
+
+Portfolio: ${
+            userTemplateInfo?.portfolioUrl || "[_portfolioUrl_]"
+          }
+
+Thanks!`,
+
+          specificReferralToHR: `Hi ${
+            userTemplateInfo?.HrName || "[_name_]"
+          },
+
+I’m interested in ${
+            userTemplateInfo?.positionName || "[_position_name_]"
+          } role.
+
+Experience: ${
+            userTemplateInfo?.experience || "[_experience_]"
+          } year${
+            userTemplateInfo?.experience <= 1 ? "" : "s"
+          } (React${
+            isFullStack ? ", Node.js and MongoDB (previous role)" : ""
+          }).
+
+Portfolio: ${
+            userTemplateInfo?.portfolioUrl || "[_portfolioUrl_]"
+          }
+
+Thank you!`,
         },
       };
     });
   }, [userTemplateInfo]);
+
   const userTemplateInputs = [
+    { name: "firstName", label: "First Name", type: "input", required: true },
+    { name: "lastName", label: "Last Name", type: "input", required: true },
+    { name: "experience", label: "Experience", type: "input", required: true },
+    { name: "positionName", label: "Position Name", type: "input", required: true },
+    { name: "companyName", label: "Company Name", type: "input", required: true },
+    { name: "portfolioUrl", label: "Portfolio URL", type: "input", required: true },
+    { name: "HrName", label: "HR Name", type: "input", required: true },
+    { name: "teamManaged", label: "Team Managed", type: "input", required: true },
+    { name: "email", label: "Email", type: "input", required: true },
+    { name: "phoneNumber", label: "Phone Number", type: "input", required: true },
+    { name: "advertisedAt", label: "Advertised At", type: "input", required: true },
     {
-      name: "firstName",
-      label: "First Name",
-      placeholder: "Enter First Name",
-      type: "input",
-      inputType: "text",
-      disabled: false,
-      // errorMessage: "First Name is required",
-      required: true,
-    },
-    {
-      name: "lastName",
-      label: "Last Name",
-      placeholder: "Enter Last Name",
-      type: "input",
-      inputType: "text",
-      disabled: false,
-      // errorMessage: "First Name is required",
-      required: true,
-    },
-    {
-      name: "experience",
-      label: "experience",
-      placeholder: "Enter total experience",
-      type: "input",
-      inputType: "numeric",
-      disabled: false,
-      // errorMessage: "First Name is required",
-      required: true,
-    },
-    {
-      name: "positionName",
-      label: "position Name",
-      placeholder: "Enter Position Name",
-      type: "input",
-      inputType: "text",
-      disabled: false,
-      // errorMessage: "First Name is required",
-      required: true,
-    },
-    {
-      name: "companyName",
-      label: "company Name",
-      placeholder: "Enter company Name",
-      type: "input",
-      inputType: "text",
-      disabled: false,
-      // errorMessage: "First Name is required",
-      required: true,
-    },
-    {
-      name: "portfolioUrl",
-      label: "porfolio Url",
-      placeholder: "Enter porfolio Url",
-      type: "input",
-      inputType: "text",
-      disabled: false,
-      // errorMessage: "First Name is required",
-      required: true,
-    },
-    {
-      name: "HrName",
-      label: "HR Name",
-      placeholder: "Enter HR Name",
-      type: "input",
-      inputType: "text",
-      disabled: false,
-      // errorMessage: "First Name is required",
-      required: true,
-    },
-    {
-      name: "teamManaged",
-      label: "team Managed",
-      placeholder: "Enter team Managed",
-      type: "input",
-      inputType: "numeric",
-      disabled: false,
-      // errorMessage: "First Name is required",
-      required: true,
-    },
-    {
-      name: "email",
-      label: "email",
-      placeholder: "Enter email",
-      type: "input",
-      inputType: "email",
-      disabled: false,
-      // errorMessage: "First Name is required",
-      required: true,
-    },
-    {
-      name: "phoneNumber",
-      label: "Phone Number",
-      placeholder: "Enter Phone Number",
-      type: "input",
-      inputType: "numeric",
-      disabled: false,
-      // errorMessage: "First Name is required",
-      required: true,
-    },
-    {
-      name: "advertisedAt",
-      label: "Advertised At",
-      placeholder: "Enter Advertised At",
-      type: "input",
-      inputType: "text",
-      disabled: false,
-      // errorMessage: "First Name is required",
+      name: "roleType",
+      label: "Role Type",
+      type: "select",
+      options: [
+        { label: "Frontend Developer", value: "frontend" },
+        { label: "Full Stack Developer", value: "fullstack" },
+      ],
       required: true,
     },
   ];
+
   return (
     <>
       <UserInputs

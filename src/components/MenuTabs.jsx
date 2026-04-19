@@ -18,7 +18,6 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 
 export default function MenuTabs({ templateWithValue, handleCopyClick }) {
-  console.log({ templateWithValue });
   const otherInfo = [
     {
       label: "Tell me about yourself",
